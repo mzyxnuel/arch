@@ -1,5 +1,6 @@
 # Update system
 alias sys='source ~/.bashrc && echo "bashrc sourced!"'
+alias edit='code ~/.arch'
 
 # List files
 alias ll='ls -la'
@@ -24,7 +25,7 @@ i() {
 }
 
 # Remove package
-rp() {
+r() {
    sudo yay -R $1
 }
 
