@@ -21,12 +21,12 @@ rx() {
 
 # Install package and its dependencies
 i() {
-   sudo yay -S $1
+   yay -S $1
 }
 
 # Remove package
 r() {
-   sudo yay -R $1
+   yay -R $1
 }
 
 # Create directory and cd into it
