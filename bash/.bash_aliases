@@ -21,7 +21,7 @@ rx() {
 
 # Install package and its dependencies
 i() {
-   clearChache()
+   clearChache;
 
    # Install package
    yay -S $1 --noconfirm
