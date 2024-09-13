@@ -1,5 +1,10 @@
 # Update system
-alias sys='source ~/.bashrc && echo -e "\033[0;32mbashrc sourced! \033[0m"'
+alias sys='
+   sudo pacman -Syu --noconfirm
+
+   source ~/.bashrc
+   echo -e "\033[0;32mbashrc sourced! \033[0m"
+'
 alias edit='code ~/.arch'
 
 # List files
@@ -9,39 +14,41 @@ alias la='ls -A'
 # List installed packages
 alias lp='pacman -Q'
 
-# Navigation
-alias ..='cd ..'
-alias ...='cd ../..'
-alias ....='cd ../../..'
-
-# Remove directory
-rx() {
-   rm -rf $1
-}
-
 # Install package and its dependencies
 i() {
-   clearChache;
+   for package in "$@"; do
+      # Try to install package with pacman first
+      if sudo pacman -S $package --noconfirm; then
+         echo -e "\033[0;32m$package installed with pacman.\033[0m"
+      else
+         # If pacman fails, try to install with yay
+         clearCache;
+         yay -S $package --noconfirm
+         echo -e "\033[0;32m$package installed with yay.\033[0m"
+      fi
 
-   # Install package
-   yay -S $1 --noconfirm
-
-   # Add package to PACKAGES file if not already present
-   if ! grep -q "$1" ~/.arch/PACKAGES; then
-      echo "$1" >> ~/.arch/PACKAGES
-   fi
-
-   echo -e "\033[0;32m$1 installed.\033[0m"
+      # Add package to PACKAGES file if not already present
+      if ! grep -q "$package" ~/.arch/PACKAGES; then
+         echo "$package" >> ~/.arch/PACKAGES
+      fi
+   done
 }
 
 # Remove package
 r() {
-   yay -R $1 --noconfirm
+   for package in "$@"; do
+      yay -R $package --noconfirm
 
-   # Remove package from PACKAGES file if present
-   sed -i "/$1/d" ~/.arch/PACKAGES
+      # Remove package from PACKAGES file if present
+      sed -i "/$package/d" ~/.arch/PACKAGES
 
-   echo -e "\033[0;31m$1 removed.\033[0m"
+      echo -e "\033[0;31m$package removed.\033[0m"
+   done
+}
+
+# Remove directory
+rx() {
+   rm -rf $1
 }
 
 # Create directory and cd into it
@@ -51,7 +58,7 @@ mkcd() {
 }
 
 # Utils
-clearChache() {
+clearCache() {
    builds=("04" "37" "68")
    for build in "${builds[@]}"; do
       sudo rm -rf /usr/lib/debug/.build-id/$build
